@@ -7,16 +7,13 @@ import streamlit as st
 import tensorflow as tf
 from sklearn.preprocessing import StandardScaler
 
-# Load the trained ML model (AdaBoost)
 with open("model.pkl", "rb") as model_file:
     ml_model = pickle.load(model_file)
 
-# Load the trained Deep Learning model
 deep_model = tf.keras.models.load_model("deep_model.h5")
 
-# Load the scaler (ideally, load the actual saved scaler; here fitted manually for now)
 scaler = StandardScaler()
-scaler.fit([[4,146,85,27,100,28.9,0.189,27]])
+scaler.fit([[4,146,85,27,100,28.9,0.189,27,3,2,1.45,0.12]])
 
 def predict_diabetes(features, model_type="ML"):
     features = np.array(features).reshape(1, -1)
@@ -39,11 +36,11 @@ Welcome to the **Diabetes Prediction App using Machine Learning and Deep Learnin
 """)
 
 st.sidebar.header("Select Model")
-model_choice = st.sidebar.radio("Choose prediction model:", ("Machine Learning (AdaBoost)", "Deep Learning (Neural Network)"))
+model_choice = st.sidebar.radio("Choose prediction model:", ("Machine Learning (Best Model)", "Deep Learning (Neural Network)"))
 
 st.subheader("Patient Medical Information")
 
-col1, col2 = st.columns(2)
+col1, col2 , col3 = st.columns(3)
 
 with col1:
     pregnancies = st.number_input("Number of Pregnancies", min_value=0, step=1)
@@ -57,8 +54,27 @@ with col2:
     diabetes_pedigree = st.number_input("Diabetes Pedigree Function", min_value=0.0, format="%.3f")
     age = st.number_input("Age", min_value=0)
 
+with col3:
+    BMI_Category = st.number_input("BMI CATEGORY", min_value=0)
+    Age_Group = st.number_input("Age Group", min_value=0)
+    Glucose_Insulin_Ratio = st.number_input("Glucose Insulin Ratio", min_value=0.0, format="%.3f")
+    Pregnencies_per_Age = st.number_input("Pregnencies per Age", min_value=0.0, format="%.3f")
+
 if st.button("Predict"):
-    features = [pregnancies, glucose, blood_pressure, skin_thickness, insulin, bmi, diabetes_pedigree, age]
+    features = [
+        pregnancies,
+        glucose,
+        blood_pressure,
+        skin_thickness,
+        insulin,
+        bmi,
+        diabetes_pedigree,
+        age,
+        BMI_Category,
+        Age_Group,
+        Glucose_Insulin_Ratio,
+        Pregnencies_per_Age
+    ]
     model_type = "ML" if model_choice == "Machine Learning (AdaBoost)" else "DL"
     prediction = predict_diabetes(features, model_type)
 
